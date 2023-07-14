@@ -3,10 +3,8 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
+
 //******************************************************************************************************
 //menu class
 public class menu {
@@ -35,13 +33,13 @@ public class menu {
     //function for setting up the database
     public static void setitup() {
         Connection conn = null;
-
         try {
             // Load the SQLite JDBC driver
             Class.forName("org.sqlite.JDBC");
 
             // Address of the database
             String url = "jdbc:sqlite:medspannerdata.db";
+
             // Connecting to the database
             conn = DriverManager.getConnection(url);
             System.out.println("Connection Established");
@@ -53,17 +51,23 @@ public class menu {
             String createtableforobs = "CREATE TABLE IF NOT EXISTS observations (id INTEGER PRIMARY KEY, " +
                     "DATE VARCHAR, OBSERVATION VARCHAR)";
 
-
-
             // Execute the SQL statement
             statement.executeUpdate(createtableforobs);
 
-            //creating table for meds
+            // Verify if the observations table was created
+            ResultSet resultSet = conn.getMetaData().getTables(null, null, "observations", null);
+            if (resultSet.next()) {
+                System.out.println("Observations table exists");
+            } else {
+                System.out.println("Observations table does not exist");
+            }
+
+            // Creating table for meds
             String createtableformeds = "CREATE TABLE IF NOT EXISTS meds (id INTEGER PRIMARY KEY, "+
                     "MEDNAME VARCHAR, DOSE VARCHAR, EXPIRY VARCHAR, NOTES VARCHAR)";
             statement.executeUpdate(createtableformeds);
 
-            System.out.println("Table created successfully");
+            System.out.println("Tables created successfully");
         } catch (ClassNotFoundException e) {
             System.out.println("SQLite JDBC driver not found");
         } catch (SQLException e) {
@@ -72,12 +76,14 @@ public class menu {
             try {
                 if (conn != null) {
                     conn.close();
+                    System.out.println("Connection closed");
                 }
             } catch (SQLException ex) {
                 System.out.println(ex.getMessage());
             }
         }
     }
+
 
 
     public menu() {
@@ -129,9 +135,20 @@ public class menu {
 
         frame.add(Box.createVerticalGlue());
 
+        //##################################ACTION LISTENERS##################################
+
         //action listeners for buttons
 
-        //action listener for new obsessions
+        //action listener for setup
+        ActionListener setupbox = new ActionListener(){
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                setitup();
+            }
+        };
+        setup.addActionListener(setupbox);
+
+        //action listener for new observation
         ActionListener newob = new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 trackobservations trackobs = new trackobservations();
@@ -139,6 +156,16 @@ public class menu {
         };
 
         trackobs.addActionListener(newob);
+
+        //action listener for view observations
+        ActionListener viewob= new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                viewobs viewobs = new viewobs();
+            }
+        };
+        viewobs.addActionListener(viewob);
+
 
 
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);

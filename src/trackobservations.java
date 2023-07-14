@@ -1,5 +1,14 @@
+//importing modules
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.sql.*;
+
 
 public class trackobservations {
     // Defining components
@@ -10,6 +19,43 @@ public class trackobservations {
     private JLabel obslabel;
     private JTextArea obsarea;
     private JButton submit;
+    //function for inserting data into table
+    private void insertDataToTable(String DATE, String OBSERVATION) {
+        //defining the db url
+        String url = "jdbc:sqlite:medspannerdata.db";
+        //selecting the highest id from table
+        String selectMaxIdSql = "SELECT MAX(id) FROM observations";
+        //inserting data into table
+        String insertSql = "INSERT INTO observations (id, DATE,OBSERVATION) VALUES ( ?, ?, ?)";
+        //try catch block to attempt connection
+        try (Connection conn = DriverManager.getConnection(url);
+             PreparedStatement selectMaxIdStmt = conn.prepareStatement(selectMaxIdSql);
+             PreparedStatement insertStmt = conn.prepareStatement(insertSql)) {
+
+            // Get the maximum id from the table
+            int maxId = 0;
+            try (ResultSet rs = selectMaxIdStmt.executeQuery()) {
+                if (rs.next()) {
+                    maxId = rs.getInt(1);
+                }
+            }
+
+            // Increment the id value by 1
+            int id = maxId + 1;
+
+            // Insert the data into the table
+            insertStmt.setInt(1, id);
+            insertStmt.setString(2, DATE);
+            insertStmt.setString(3, OBSERVATION);
+            insertStmt.executeUpdate();
+
+            JOptionPane.showMessageDialog(null,"Record Saved");
+
+        } catch (SQLException e) {
+            //just in case if the db doesnt work
+            JOptionPane.showMessageDialog(null, "Error occurred while inserting data: " + e.getMessage());
+        }
+    }
 
     public trackobservations() {
         // Creating components
@@ -37,6 +83,24 @@ public class trackobservations {
         frame.pack();
         frame.setVisible(true);
         frame.setSize(600, 400);
+
+        //action listener for submit button
+        ActionListener subm = new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                // Get the text from the text fields and text area
+                String DATE = date.getText();
+                String OBSERVATION = obsarea.getText();
+
+                // Insert the data into the SQLite table
+                insertDataToTable( DATE,OBSERVATION);
+
+                // Clear the text fields and text area
+
+                date.setText("");
+                obsarea.setText("");
+            }
+        };
+        submit.addActionListener(subm);
     }
 
     public static void main(String[] args) {
@@ -46,4 +110,5 @@ public class trackobservations {
             }
         });
     }
+
 }
