@@ -66,6 +66,13 @@ public class menu {
             String createtableformeds = "CREATE TABLE IF NOT EXISTS meds (id INTEGER PRIMARY KEY, "+
                     "MEDNAME VARCHAR, DOSE VARCHAR, EXPIRY VARCHAR, NOTES VARCHAR)";
             statement.executeUpdate(createtableformeds);
+            // Verify if the meds table was created
+            resultSet = conn.getMetaData().getTables(null, null, "meds", null);
+            if (resultSet.next()) {
+                System.out.println("Observations table exists");
+            } else {
+                System.out.println("Observations table does not exist");
+            }
 
             System.out.println("Tables created successfully");
         } catch (ClassNotFoundException e) {
@@ -165,6 +172,39 @@ public class menu {
             }
         };
         viewobs.addActionListener(viewob);
+
+        //action listener for add meds
+
+        ActionListener admeds= new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                addmeds addmeds = new addmeds();
+            }
+        };
+        addmeds.addActionListener(admeds);
+
+        //view meds
+        //action listener for view meds
+
+        ActionListener vuemeds= new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                viewmeds addmeds = new viewmeds();
+            }
+        };
+        viewmeds.addActionListener(vuemeds);
+        //action listener for info
+        ActionListener bc = new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                info info = new info();
+
+
+            }
+        };
+
+        info.addActionListener(bc);
+
 
 
 
