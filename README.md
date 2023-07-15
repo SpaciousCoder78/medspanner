@@ -26,6 +26,7 @@ Linux RPM Package: https://download.oracle.com/java/17/archive/jdk-17.0.7_linux-
 ## Installation Guide
 
 - Go to the Releases section of this repository and download the latest version of jar.
+  
 ![image](https://github.com/SpaciousCoder78/medspanner/assets/88923986/8e268206-66bb-4657-b283-3bb5437a9786)
 
 ![image](https://github.com/SpaciousCoder78/medspanner/assets/88923986/1b7a68b0-c3c8-48f7-98d5-23bf48e3b56f)
